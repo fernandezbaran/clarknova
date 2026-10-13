@@ -1,0 +1,18 @@
+{
+  "name": "Clark Nova 1.5",
+  "short_name": "Clark Nova",
+  "description": "Programa de maquetación y autoedición offline: crea, edita y exporta fanzines a PDF desde el navegador.",
+  "lang": "es",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#14141a",
+  "theme_color": "#1b1b1f",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1b1b1f" />
+  <meta name="description" content="Clark Nova: programa de maquetación y autoedición offline. Crea, edita y exporta fanzines desde tu navegador." />
+  <title>Clark Nova</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- ============================= TOP BAR ============================= -->
+    <header class="topbar">
+      <button class="brand" id="btnAbout" type="button" title="Acerca de Clark Nova" aria-label="Acerca de Clark Nova">
+        <img class="brand-logo" src="icons/icon.svg" alt="" width="34" height="34" />
+        <span class="brand-name">Clark Nova</span>
+      </button>
+
+      <div class="topbar-group">
+        <button id="btnUndo" class="icon-toggle" type="button" title="Deshacer (Ctrl+Z)" aria-label="Deshacer" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7h6a5 5 0 0 1 0 10h-4"/><path d="M9 7 5 11l4 4"/></svg>
+        </button>
+        <button id="btnRedo" class="icon-toggle" type="button" title="Rehacer (Ctrl+Shift+Z)" aria-label="Rehacer" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7H9a5 5 0 0 0 0 10h4"/><path d="M15 7l4 4-4 4"/></svg>
+        </button>
+      </div>
+
+      <div class="topbar-group">
+        <label class="field">
+          <span>Orientación</span>
+          <select id="orientation">
+            <option value="portrait">Vertical</option>
+            <option value="landscape">Horizontal</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Tamaño</span>
+          <select id="pageSize">
+            <option value="A4">A4 (210 × 297 mm)</option>
+            <option value="A5">A5 (148 × 210 mm)</option>
+            <option value="Letter">Carta (216 × 279 mm)</option>
+            <option value="Legal">Oficio (216 × 356 mm)</option>
+            <option value="Tabloid">Tabloide (279 × 432 mm)</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Numeración</span>
+          <select id="numberCorner">
+            <option value="none">Sin número</option>
+            <option value="bottom-right">Abajo derecha</option>
+            <option value="bottom-left">Abajo izquierda</option>
+            <option value="bottom-center">Abajo centro</option>
+            <option value="top-right">Arriba derecha</option>
+            <option value="top-left">Arriba izquierda</option>
+            <option value="top-center">Arriba centro</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="field guides-field">
+        <span>Guías</span>
+        <div class="guide-tools">
+          <button id="guideRuler" class="icon-toggle" type="button" title="Regla" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="7.5" width="19" height="9" rx="1"/><path d="M6 7.5v3M9 7.5v4.5M12 7.5v3M15 7.5v4.5M18 7.5v3"/></svg>
+          </button>
+          <button id="guideMargins" class="icon-toggle" type="button" title="Márgenes" aria-pressed="false" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="1"/><rect x="7.5" y="7.5" width="9" height="9" rx="1" stroke-dasharray="2 2"/></svg>
+          </button>
+          <div class="margin-modes" id="marginModes" hidden>
+            <button id="marginModeOverlay" class="icon-toggle" type="button" title="Superponer al margen (recortar lo de fuera)" aria-pressed="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="1" stroke-dasharray="2 2"/><rect x="7.5" y="7.5" width="9" height="9" rx="1"/></svg>
+            </button>
+            <button id="marginModeFit" class="icon-toggle" type="button" title="Ajustar al margen (mover y encoger)" aria-pressed="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="1"/><path d="M8 8l3 3M16 8l-3 3M8 16l3-3M16 16l-3-3"/></svg>
+            </button>
+          </div>
+          <button id="guideGrid" class="icon-toggle" type="button" title="Cuadrícula" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="1"/><path d="M9.17 3.5v17M14.83 3.5v17M3.5 9.17h17M3.5 14.83h17"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="topbar-group topbar-right">
+        <button id="btnExport" class="icon-toggle" type="button" title="Exportar a PDF" aria-label="Exportar a PDF">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 2.5h8l4 4v15h-12z"/><path d="M14.5 2.5v4h4"/><path d="M9 12h6M9 15.5h6"/></svg>
+        </button>
+        <button id="btnExportBooklet" class="icon-toggle" type="button" title="Exportar PDF booklet (2 páginas por hoja, doble faz)" aria-label="Exportar PDF booklet">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10 5.3 7.5 4.9 4.5 4.9v13.7c3 0 5.5.4 7.5 1.6 2-1.2 4.5-1.6 7.5-1.6V4.9c-3 0-5.5.4-7.5 1.6z"/><path d="M12 6.5v13.7"/></svg>
+        </button>
+        <button id="btnFanzines" class="btn" type="button" title="Archivo de fanzines">Archivo</button>
+      </div>
+    </header>
+
+    <!-- ============================= WORKSPACE ============================= -->
+    <div class="workspace">
+      <!-- LEFT: pages -->
+      <aside class="sidebar sidebar-left" aria-label="Páginas">
+        <div class="sidebar-head">
+          <h2>Páginas</h2>
+          <span id="pageCount" class="badge">0</span>
+        </div>
+        <ul id="pageList" class="page-list"></ul>
+        <div class="sidebar-actions">
+          <button id="btnAddPage" class="btn btn-primary" type="button">+ Agregar página</button>
+          <button id="btnDeletePage" class="btn" type="button">Borrar página</button>
+        </div>
+      </aside>
+
+      <!-- CENTER: canvas -->
+      <main class="canvas-area">
+        <div class="zoom-bar" id="zoomBar">
+          <button id="btnZoomOut" type="button" title="Alejar" aria-label="Alejar">−</button>
+          <button id="btnZoomFit" class="zoom-level" type="button" title="Ajustar a la ventana">100%</button>
+          <button id="btnZoomIn" type="button" title="Acercar" aria-label="Acercar">+</button>
+        </div>
+        <div class="canvas-scroll" id="canvasScroll">
+          <div class="page-frame" id="pageFrame">
+            <div class="ruler-corner"></div>
+            <div class="ruler r-h" id="rulerH"></div>
+            <div class="ruler r-v" id="rulerV"></div>
+            <div id="pageViewport" class="page-viewport">
+              <div id="pageCanvas" class="page-canvas">
+                <div id="gridOverlay" class="grid-overlay"></div>
+                <div id="marginGuides" class="margin-guides"></div>
+                <div id="layerRoot" class="layer-root"></div>
+                <div id="pageNumber" class="page-number"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- RIGHT: layers + properties -->
+      <aside class="sidebar sidebar-right" aria-label="Capas">
+        <div class="sidebar-head">
+          <h2>Capas</h2>
+          <span id="layerCount" class="badge">0</span>
+        </div>
+        <ul id="layerList" class="layer-list"></ul>
+        <div class="sidebar-resizer" data-resize="layerList" role="separator" aria-orientation="horizontal" title="Arrastrar para cambiar el tamaño"></div>
+        <div id="sidebarActions" class="sidebar-actions">
+          <button id="btnAddText" class="btn btn-primary" type="button">+ Texto</button>
+          <button id="btnAddImage" class="btn" type="button">+ Imagen</button>
+          <button id="btnAddShape" class="btn" type="button">+ Forma</button>
+        </div>
+        <div class="sidebar-resizer" data-resize="sidebarActions" role="separator" aria-orientation="horizontal" title="Arrastrar para cambiar el tamaño"></div>
+        <div id="layerProps" class="layer-props">
+          <p class="empty">Ninguna capa seleccionada.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ============================= FANZINE LIST MODAL ============================= -->
+  <div id="fanzineModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="fanzineModalTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="fanzineModalTitle">Fanzines</h2>
+        <button id="btnCloseModal" class="btn-icon" type="button" aria-label="Cerrar">✕</button>
+      </div>
+      <ul id="fanzineList" class="fanzine-list"></ul>
+      <div class="modal-foot">
+        <button id="btnNewFanzine" class="btn btn-primary" type="button">+ Nuevo fanzine</button>
+        <button id="btnExportAll" class="btn" type="button">Exportar todos</button>
+        <button id="btnImport" class="btn" type="button">Importar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= ABOUT MODAL ============================= -->
+  <div id="aboutModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+    <div class="modal-card modal-card-sm">
+      <div class="modal-head">
+        <h2 id="aboutTitle">Acerca de</h2>
+        <button id="btnCloseAbout" class="btn-icon" type="button" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="about-body">
+        <img class="about-icon" src="icons/icon.svg" alt="Clark Nova" width="76" height="76" />
+        <h3 class="about-title">Clark Nova 1.5</h3>
+        <p class="about-subtitle">Programa de maquetación y autoedición</p>
+        <p class="about-author">Creado y mantenido por Fabricio E. Fernández Barán</p>
+        <div class="about-links">
+          <a href="#" target="_blank" rel="noopener">Código fuente</a>
+          <a href="#" target="_blank" rel="noopener">Licencia de uso</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <input id="imageInput" type="file" accept="image/*" multiple hidden />
+  <input id="importInput" type="file" accept=".json,.fanzine,application/json" hidden />
+
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
